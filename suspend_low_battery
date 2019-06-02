@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ ! -f /etc/xdg/suspend_low_battery/config ]; then
+    LIMIT=7
+    REFRESHRATE=30
+else
+    LIMIT=$(cat /etc/xdg/suspend_low_battery/config | grep LIMIT | cut -d"=" -f2)    
+    REFRESHRATE=$(cat /etc/xdg/suspend_low_battery/config | grep REFRESHRATE | cut -d"=" -f2)    
+fi
+
+while :
+do
+    BATTERY_CHARGE=$(cat /sys/class/power_supply/BAT0/capacity)
+    BATTERY_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+
+    if [ "$BATTERY_STATUS" = "Discharging" ] && [ "$BATTERY_CHARGE" -le "$LIMIT" ]; then
+        logger "Battery is $BATTERY_STATUS and at $BATTERY_CHARGE. --> Suspending"
+        /bin/systemctl suspend
+    fi
+    sleep $REFRESHRATE
+done

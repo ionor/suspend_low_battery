@@ -1,0 +1,5 @@
+# At what value should a suspend be initiated. Default is 7
+LIMIT=7
+
+# How often should the script check. Default is every 30 seconds
+REFRESHRATE=30
